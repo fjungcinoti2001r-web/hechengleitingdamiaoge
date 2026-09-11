@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>合成大苗哥-雷霆版 (慎点!!!)</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background-color: #0F1015;
+            background-image: radial-gradient(#252A34 10%, transparent 11%);
+            background-size: 20px 20px;
+            color: #E5E9F0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* 顶部看板 */
+        .top-bar {
+            width: 100%;
+            max-width: 420px;
+            padding: 10px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #181A20;
+            border-bottom: 2px solid #D4AF37;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+            z-index: 10;
+        }
+
+        .title-group h1 {
+            font-size: 19px;
+            color: #D4AF37;
+            letter-spacing: 1px;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
+            white-space: nowrap;
+        }
+        .subtitle {
+            font-size: 12px;
+            color: #FF334B;
+            font-weight: 900;
+            letter-spacing: 1.5px;
+            animation: warningBlink 1.2s infinite alternate;
+        }
+        @keyframes warningBlink {
+            0% { opacity: 0.7; transform: scale(0.98); }
+            100% { opacity: 1; transform: scale(1.02); text-shadow: 0 0 8px #FF334B; }
+        }
+
+        .score-board {
+            text-align: right;
+        }
+        .score-label {
+            font-size: 11px;
+            color: #8D99AE;
+        }
+        .score-val {
+            font-size: 22px;
+            font-weight: 800;
+            color: #FFD166;
+            font-family: 'Arial Black', sans-serif;
+        }
+
+        /* 游戏主舞台 */
+        #game-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            flex: 1;
+            margin: 0 auto;
+            overflow: hidden;
+            background: linear-gradient(180deg, #12141A 0%, #090A0D 100%);
+            border-left: 2px solid #2B2D42;
+            border-right: 2px solid #2B2D42;
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.8);
+        }
+
+        /* 警戒线 */
+        #danger-line {
+            position: absolute;
+            left: 0;
+            top: 110px;
+            width: 100%;
+            height: 2px;
+            border-top: 2px dashed #E63946;
+            box-shadow: 0 0 8px #E63946;
+            pointer-events: none;
+            z-index: 5;
+        }
+        #danger-label {
+            position: absolute;
+            right: 8px;
+            top: -18px;
+            font-size: 10px;
+            color: #E63946;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        /* 顶部下落预览指示器 */
+        #dropper-preview {
+            position: absolute;
+            top: 35px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 8;
+            background-size: cover;
+            background-position: center;
+            border: 2px solid #D4AF37;
+            box-shadow: 0 0 12px rgba(212, 175, 55, 0.5);
+        }
+
+        /* Combo 连击漂浮字特效 */
+        .combo-text {
+            position: absolute;
+            font-weight: 900;
+            color: #FFD166;
+            text-shadow: 0 0 10px #E63946, 2px 2px 0 #000;
+            pointer-events: none;
+            z-index: 25;
+            animation: comboFly 0.85s ease-out forwards;
+            white-space: nowrap;
+        }
+        @keyframes comboFly {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+            20% { opacity: 1; transform: translate(-50%, -70%) scale(1.3); }
+            70% { opacity: 1; transform: translate(-50%, -100%) scale(1.0); }
+            100% { opacity: 0; transform: translate(-50%, -130%) scale(0.8); }
+        }
+
+        /* 屏幕微震动反馈 */
+        .shake {
+            animation: screenShake 0.15s cubic-bezier(.36,.07,.19,.97) both;
+        }
+        @keyframes screenShake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-3px, 0, 0); }
+            40%, 60% { transform: translate3d(3px, 0, 0); }
+        }
+
+        /* 结算蒙层 */
+        #game-over-mask {
+            display: none;
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(10, 10, 15, 0.92);
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 30;
+            padding: 20px;
+        }
+
+        #capture-area {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            background: #16181E;
+            border: 3px solid #D4AF37;
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-shadow: 0 0 25px rgba(212, 175, 55, 0.2);
+        }
+
+        .poster-badge {
+            font-size: 13px;
+            color: #E63946;
+            letter-spacing: 2px;
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+        .poster-title {
+            font-size: 24px;
+            font-weight: 900;
+            color: #D4AF37;
+            margin-bottom: 12px;
+            letter-spacing: 1px;
+        }
+
+        .poster-score-box {
+            background: #0D0E12;
+            border: 1px solid #333745;
+            padding: 8px 25px;
+            border-radius: 10px;
+            margin: 8px 0;
+            text-align: center;
+        }
+        .poster-score-num {
+            font-size: 40px;
+            color: #FFD166;
+            font-weight: bold;
+            font-family: 'Arial Black', sans-serif;
+        }
+
+        .poster-role-tag {
+            font-size: 14px;
+            color: #E5E9F0;
+            margin-top: 6px;
+            padding: 4px 14px;
+            background: rgba(230, 57, 70, 0.25);
+            border-radius: 15px;
+            border: 1px solid #E63946;
+        }
+
+        .poster-footer {
+            margin-top: 15px;
+            font-size: 11px;
+            color: #6C757D;
+            letter-spacing: 1px;
+        }
+
+        .mobile-poster-box {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 15px;
+            width: 100%;
+        }
+        #final-poster-img {
+            width: 85%;
+            aspect-ratio: 1 / 1;
+            border-radius: 16px;
+            border: 3px solid #D4AF37;
+            box-shadow: 0 0 20px rgba(0,0,0,0.8);
+        }
+        .save-tip {
+            font-size: 13px;
+            color: #FFD166;
+            font-weight: bold;
+            margin-top: 10px;
+            background: #252834;
+            padding: 6px 16px;
+            border-radius: 20px;
+            border: 1px solid #3D4254;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 16px;
+            width: 80%;
+        }
+
+        .btn-core {
+            border: none;
+            padding: 12px 0;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        .btn-gold {
+            background: linear-gradient(90deg, #D4AF37 0%, #AA820A 100%);
+            color: #000;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+        }
+        .btn-dark {
+            background: #2B2D42;
+            color: #E5E9F0;
+            border: 1px solid #4A4E69;
+        }
+        .btn-core:active { transform: scale(0.96); }
+    </style>
+</head>
+<body>
+
+<div class="top-bar">
+    <div class="title-group">
+        <h1>合成大苗哥-雷霆版</h1>
+        <div class="subtitle">慎点!!! 硬核爆烈战力挑战</div>
+    </div>
+    <div class="score-board">
+        <div class="score-label">总战力分</div>
+        <div class="score-val" id="score">0</div>
+    </div>
+</div>
+
+<div id="game-wrapper">
+    <div id="danger-line"><span id="danger-label">极限警戒线 ⚠️</span></div>
+    <div id="dropper-preview"></div>
+
+    <div id="game-over-mask">
+        <div id="capture-area">
+            <div class="poster-badge">⚡ 终局战报 · 战损认证 ⚡</div>
+            <div class="poster-title">合成大苗哥-雷霆版</div>
+            <div class="poster-score-box">
+                <div style="font-size: 11px; color:#8D99AE;">最终武力值</div>
+                <div class="poster-score-num" id="final-score">0</div>
+            </div>
+            <div class="poster-role-tag" id="max-role-tag">最高形态：-</div>
+            <div class="poster-footer">© 演员谢苗超话 · 雷霆出击认证</div>
+        </div>
+
+        <div class="mobile-poster-box" id="mobile-poster-box">
+            <img id="final-poster-img" src="" alt="专属战绩卡">
+            <div class="save-tip">👆 长按上方图片即可保存到手机相册 👆</div>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn-core btn-gold" id="gen-poster-btn" onclick="generatePoster()">📸 生成 1:1 专属战报</button>
+            <button class="btn-core btn-dark" onclick="location.reload()">重燃战火 🔁</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // -------------------------------------------------------------
+    // 硬核物理音效引擎 (分级拳风 / 重击 / 成瞎子拔刀 / 苗哥大欢呼)
+    // -------------------------------------------------------------
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    let audioCtx = null;
+
+    function initAudio() {
+        if (!audioCtx) audioCtx = new AudioCtx();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+    }
+
+    // 1. 轻拳风声 (呼——)
+    function playWhooshSound() {
+        initAudio();
+        const bufferSize = audioCtx.sampleRate * 0.12;
+        const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+            data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.4));
+        }
+        const noise = audioCtx.createBufferSource();
+        noise.buffer = buffer;
+
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.setValueAtTime(320, audioCtx.currentTime);
+        filter.frequency.exponentialRampToValueAtTime(140, audioCtx.currentTime + 0.12);
+
+        const gain = audioCtx.createGain();
+        gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.12);
+
+        noise.connect(filter);
+        filter.connect(gain);
+        gain.connect(audioCtx.destination);
+        noise.start();
+    }
+
+    // 2. 重拳骨折声 (砰！)
+    function playHeavyPunchSound(level = 6) {
+        initAudio();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'triangle';
+        const startFreq = 180 + (level * 10);
+        osc.frequency.setValueAtTime(startFreq, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(35, audioCtx.currentTime + 0.2);
+
+        gain.gain.setValueAtTime(0.7, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.2);
+    }
+
+    // 3. 成瞎子拔刀出鞘音效 (清脆长鸣 铮——)
+    function playSwordSound() {
+        initAudio();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(1200, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(2400, audioCtx.currentTime + 0.08);
+        osc.frequency.exponentialRampToValueAtTime(1800, audioCtx.currentTime + 0.35);
+
+        gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.35);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.35);
+    }
+
+    // 4. 终极大西瓜（谢苗本尊）欢呼胜利大锣声
+    function playGrandTriumphSound() {
+        initAudio();
+        const notes = [261.63, 329.63, 392.00, 523.25];
+        notes.forEach((freq, idx) => {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime + idx * 0.08);
+            gain.gain.setValueAtTime(0.4, audioCtx.currentTime + idx * 0.08);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + idx * 0.08 + 0.4);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start(audioCtx.currentTime + idx * 0.08);
+            osc.stop(audioCtx.currentTime + idx * 0.08 + 0.4);
+        });
+    }
+
+    // 统一音效调度中枢
+    function playSoundByLevel(level) {
+        if (level === 10) {
+            playSwordSound(); // Lv.10 成瞎子：拔刀出鞘
+        } else if (level === 12) {
+            playGrandTriumphSound(); // Lv.12 终极谢苗：胜利和弦
+        } else if (level >= 6) {
+            playHeavyPunchSound(level); // 高阶角色：硬核重拳
+        } else {
+            playWhooshSound(); // 基础角色：破空轻拳
+        }
+    }
+
+    // -------------------------------------------------------------
+    // Combo 连击搞笑词逻辑
+    // -------------------------------------------------------------
+    let comboCount = 0;
+    let lastMergeTime = 0;
+    const COMBO_WORDS = [
+        "我佛糍粑",
+        "苗哥我错了",
+        "手下留情！",
+        "这拳力道太冲！",
+        "给大佬递刀！",
+        "目中有人了！",
+        "硬核顶不住啦"
+    ];
+
+    function triggerComboPopup(x, y) {
+        const now = Date.now();
+        if (now - lastMergeTime < 950) {
+            comboCount++;
+        } else {
+            comboCount = 1;
+        }
+        lastMergeTime = now;
+
+        if (comboCount >= 2) {
+            const word = COMBO_WORDS[Math.floor(Math.random() * COMBO_WORDS.length)];
+            const span = document.createElement('div');
+            span.className = 'combo-text';
+            span.innerText = `${word} Combo x${comboCount}!`;
+            span.style.left = `${x}px`;
+            span.style.top = `${y}px`;
+            span.style.fontSize = `${Math.min(26, 16 + comboCount * 2)}px`;
+            wrapper.appendChild(span);
+            setTimeout(() => span.remove(), 850);
+        }
+    }
+
+    // -------------------------------------------------------------
+    // 13 级角色定义
+    // -------------------------------------------------------------
+    const ROLES = [
+        { level: 0,  name: "洪文定", radius: 17 },
+        { level: 1,  name: "巩固",   radius: 23 },
+        { level: 2,  name: "小魔怪", radius: 29 },
+        { level: 3,  name: "甘罗",   radius: 36 },
+        { level: 4,  name: "孙悟空", radius: 44 },
+        { level: 5,  name: "耿恭",   radius: 52 },
+        { level: 6,  name: "辛弃疾", radius: 61 },
+        { level: 7,  name: "荆轲",   radius: 70 },
+        { level: 8,  name: "柳平",   radius: 80 },
+        { level: 9,  name: "李红旗", radius: 91 },
+        { level: 10, name: "成瞎子", radius: 103 },
+        { level: 11, name: "铭金",   radius: 116 },
+        { level: 12, name: "苗哥本尊", radius: 132 }
+    ];
+
+    // 图片自动兼容
+    const roleImages = [];
+    function initImageAssets() {
+        ROLES.forEach((role, index) => {
+            const num = index + 1;
+            const img = new Image();
+            const candidatePaths = [
+                `./images/role(${num}).png`,
+                `./images/role(${num}).jpg`,
+                `./images/role（${num}）.png`,
+                `./images/role（${num}）.jpg`,
+                `./images/role${num}.png`,
+                `./images/role${num}.jpg`
+            ];
+            let attempt = 0;
+            img.onerror = () => {
+                attempt++;
+                if (attempt < candidatePaths.length) {
+                    img.src = encodeURI(candidatePaths[attempt]);
+                }
+            };
+            img.src = encodeURI(candidatePaths[0]);
+            roleImages.push(img);
+        });
+    }
+    initImageAssets();
+
+    const wrapper = document.getElementById('game-wrapper');
+    const previewEl = document.getElementById('dropper-preview');
+    const scoreEl = document.getElementById('score');
+    const gameOverMask = document.getElementById('game-over-mask');
+    const finalScoreEl = document.getElementById('final-score');
+    const maxRoleTag = document.getElementById('max-role-tag');
+
+    let width = wrapper.clientWidth;
+    let height = wrapper.clientHeight;
+    let score = 0;
+    let highestLevel = 0;
+    let isGameOver = false;
+    let canDrop = true;
+    let currentDropLevel = 0;
+    let currentX = width / 2;
+
+    const { Engine, Render, Runner, Bodies, Composite, Events } = Matter;
+    const engine = Engine.create({ enableSleeping: false });
+    engine.gravity.y = 1.35;
+
+    const render = Render.create({
+        element: wrapper,
+        engine: engine,
+        options: {
+            width: width,
+            height: height,
+            wireframes: false,
+            background: 'transparent'
+        }
+    });
+
+    Render.run(render);
+    const runner = Runner.create();
+    Runner.run(runner, engine);
+
+    // 边界定义
+    const wallThick = 60;
+    const ground = Bodies.rectangle(width / 2, height + wallThick / 2, width * 2, wallThick, { 
+        isStatic: true, friction: 0.8, render: { visible: false } 
+    });
+    const leftWall = Bodies.rectangle(-wallThick / 2, height / 2, wallThick, height * 2, { 
+        isStatic: true, friction: 0.8, render: { visible: false } 
+    });
+    const rightWall = Bodies.rectangle(width + wallThick / 2, height / 2, wallThick, height * 2, { 
+        isStatic: true, friction: 0.8, render: { visible: false } 
+    });
+    Composite.add(engine.world, [ground, leftWall, rightWall]);
+
+    // 绘制正圆形头像与雷霆金圈
+    Events.on(render, 'afterRender', () => {
+        const ctx = render.context;
+        const bodies = Composite.allBodies(engine.world);
+
+        bodies.forEach(body => {
+            if (body.roleInfo) {
+                const { x, y } = body.position;
+                const r = body.roleInfo.radius;
+                const img = roleImages[body.roleInfo.level];
+
+                ctx.save();
+                ctx.translate(x, y);
+                ctx.rotate(body.angle);
+
+                ctx.beginPath();
+                ctx.arc(0, 0, r, 0, Math.PI * 2);
+                ctx.clip();
+
+                if (img && img.complete && img.naturalWidth !== 0) {
+                    ctx.drawImage(img, -r, -r, r * 2, r * 2);
+                } else {
+                    ctx.fillStyle = "#1E2028";
+                    ctx.fill();
+                    ctx.fillStyle = "#D4AF37";
+                    ctx.font = `bold ${Math.max(10, r * 0.35)}px sans-serif`;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(body.roleInfo.name, 0, 0);
+                }
+
+                ctx.restore();
+                ctx.save();
+                ctx.translate(x, y);
+                ctx.beginPath();
+                ctx.arc(0, 0, r, 0, Math.PI * 2);
+                ctx.lineWidth = body.roleInfo.level >= 10 ? 4 : 2;
+                ctx.strokeStyle = body.roleInfo.level >= 10 ? '#FFD166' : '#D4AF37';
+                ctx.stroke();
+                ctx.restore();
+            }
+        });
+    });
+
+    // 掉落池设定
+    function setupNextDrop() {
+        let maxDropLevel = 3;
+        if (score > 600) maxDropLevel = 4;
+        if (score > 1500) maxDropLevel = 5;
+
+        currentDropLevel = Math.floor(Math.random() * maxDropLevel);
+        const info = ROLES[currentDropLevel];
+        const r = info.radius;
+
+        previewEl.style.width = (r * 2) + 'px';
+        previewEl.style.height = (r * 2) + 'px';
+
+        const img = roleImages[currentDropLevel];
+        if (img && img.src) {
+            previewEl.style.backgroundImage = `url('${img.src}')`;
+            previewEl.innerText = "";
+        } else {
+            previewEl.style.backgroundColor = "#2B2D42";
+            previewEl.innerText = info.name;
+        }
+
+        updatePreviewPos(currentX);
+    }
+
+    function updatePreviewPos(x) {
+        const r = ROLES[currentDropLevel].radius;
+        const clampedX = Math.max(r + 2, Math.min(width - r - 2, x));
+        currentX = clampedX;
+        previewEl.style.left = clampedX + 'px';
+    }
+
+    function dropRole() {
+        if (!canDrop || isGameOver) return;
+        canDrop = false;
+
+        const info = ROLES[currentDropLevel];
+        const circle = Bodies.circle(currentX, 60, info.radius, {
+            restitution: 0.15,
+            friction: 0.15,
+            density: 0.003,
+            render: { visible: false }
+        });
+        circle.roleInfo = info;
+        Composite.add(engine.world, circle);
+
+        playWhooshSound(); // 下落轻拳风
+        previewEl.style.display = 'none';
+
+        setTimeout(() => {
+            if (!isGameOver) {
+                setupNextDrop();
+                previewEl.style.display = 'block';
+                canDrop = true;
+            }
+        }, 500);
+    }
+
+    // 碰撞合成及连击判定
+    Events.on(engine, 'collisionStart', (event) => {
+        event.pairs.forEach(pair => {
+            const bodyA = pair.bodyA;
+            const bodyB = pair.bodyB;
+
+            if (bodyA.roleInfo && bodyB.roleInfo) {
+                if (bodyA.roleInfo.level === bodyB.roleInfo.level) {
+                    const nextLevel = bodyA.roleInfo.level + 1;
+                    if (nextLevel < ROLES.length && !bodyA.isRemoved && !bodyB.isRemoved) {
+                        bodyA.isRemoved = true;
+                        bodyB.isRemoved = true;
+
+                        const midX = (bodyA.position.x + bodyB.position.x) / 2;
+                        const midY = (bodyA.position.y + bodyB.position.y) / 2;
+                        const nextInfo = ROLES[nextLevel];
+
+                        Composite.remove(engine.world, [bodyA, bodyB]);
+
+                        const newCircle = Bodies.circle(midX, midY, nextInfo.radius, {
+                            restitution: 0.15,
+                            friction: 0.15,
+                            density: 0.003,
+                            render: { visible: false }
+                        });
+                        newCircle.roleInfo = nextInfo;
+                        Composite.add(engine.world, newCircle);
+
+                        // 屏幕微震动
+                        if (nextLevel >= 7) {
+                            wrapper.classList.add('shake');
+                            setTimeout(() => wrapper.classList.remove('shake'), 160);
+                        }
+
+                        if (nextLevel > highestLevel) highestLevel = nextLevel;
+
+                        score += (nextLevel + 1) * 3;
+                        scoreEl.innerText = score;
+
+                        // 播放专属打击音效
+                        playSoundByLevel(nextLevel);
+
+                        // 触发连击弹幕
+                        triggerComboPopup(midX, midY);
+                    }
+                }
+            }
+        });
+    });
+
+    // 警戒线检测
+    const DANGER_Y = 110;
+    setInterval(() => {
+        if (isGameOver) return;
+        const bodies = Composite.allBodies(engine.world);
+
+        bodies.forEach(b => {
+            if (b.roleInfo && (b.position.y - b.roleInfo.radius < DANGER_Y)) {
+                if (Math.abs(b.velocity.y) < 0.2 && Math.abs(b.velocity.x) < 0.2 && b.position.y > 75) {
+                    triggerGameOver();
+                }
+            }
+        });
+    }, 1000);
+
+    function triggerGameOver() {
+        isGameOver = true;
+        previewEl.style.display = 'none';
+        finalScoreEl.innerText = score;
+        maxRoleTag.innerText = `最高战力形态：${ROLES[highestLevel].name}`;
+        gameOverMask.style.display = 'flex';
+    }
+
+    function generatePoster() {
+        const captureArea = document.getElementById('capture-area');
+        const mobilePosterBox = document.getElementById('mobile-poster-box');
+        const finalPosterImg = document.getElementById('final-poster-img');
+        const genBtn = document.getElementById('gen-poster-btn');
+
+        html2canvas(captureArea, {
+            scale: 2,
+            backgroundColor: "#16181E",
+            useCORS: true
+        }).then(canvas => {
+            const imgData = canvas.toDataURL('image/png');
+            finalPosterImg.src = imgData;
+
+            captureArea.style.display = 'none';
+            genBtn.style.display = 'none';
+            mobilePosterBox.style.display = 'flex';
+        });
+    }
+
+    wrapper.addEventListener('pointerdown', (e) => {
+        const rect = wrapper.getBoundingClientRect();
+        updatePreviewPos(e.clientX - rect.left);
+    });
+
+    wrapper.addEventListener('pointermove', (e) => {
+        if (!canDrop) return;
+        const rect = wrapper.getBoundingClientRect();
+        updatePreviewPos(e.clientX - rect.left);
+    });
+
+    wrapper.addEventListener('pointerup', () => {
+        dropRole();
+    });
+
+    setupNextDrop();
+</script>
+
+</body>
+</html>
