@@ -2,6 +2,9 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>合成大苗哥·雷霆版 (慎点!!!)</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
@@ -18,23 +21,40 @@
         html, body {
             width: 100%;
             height: 100%;
-            height: 100dvh; /* 适配移动端动态地址栏 */
+            height: 100dvh;
             overflow: hidden;
-            background-color: #0F1015;
-            background-image: radial-gradient(#252A34 10%, transparent 11%);
-            background-size: 20px 20px;
+            background-color: #08090C;
             color: #E5E9F0;
             font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
         }
 
-        /* 顶部看板自适应 */
-        .top-bar {
+        /* 满屏响应式：手机端占满宽度，电脑端居中保留大屏街机感 */
+        #arcade-container {
             width: 100%;
             max-width: 480px;
-            padding: 8px 15px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            background-color: #0F1015;
+            overflow: hidden;
+        }
+
+        @media (min-width: 500px) {
+            #arcade-container {
+                border-left: 2px solid #D4AF37;
+                border-right: 2px solid #D4AF37;
+                box-shadow: 0 0 40px rgba(0, 0, 0, 0.95);
+            }
+        }
+
+        /* 顶部看板大字号重构 */
+        .top-bar {
+            width: 100%;
+            padding: 12px 18px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -46,17 +66,18 @@
         }
 
         .title-group h1 {
-            font-size: 17px;
+            font-size: 20px;
             color: #D4AF37;
             letter-spacing: 1px;
             text-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
             white-space: nowrap;
         }
         .subtitle {
-            font-size: 11px;
+            font-size: 13px;
             color: #FF334B;
             font-weight: 900;
             letter-spacing: 1px;
+            margin-top: 2px;
             animation: warningBlink 1.2s infinite alternate;
         }
         @keyframes warningBlink {
@@ -68,32 +89,31 @@
             text-align: right;
         }
         .score-label {
-            font-size: 10px;
+            font-size: 12px;
             color: #8D99AE;
+            font-weight: bold;
         }
         .score-val {
-            font-size: 20px;
-            font-weight: 800;
+            font-size: 26px;
+            font-weight: 900;
             color: #FFD166;
             font-family: 'Arial Black', sans-serif;
+            line-height: 1.1;
         }
 
-        /* 手机端全贴合战斗舞台 */
+        /* 战斗主舞台 */
         #game-wrapper {
             position: relative;
             width: 100%;
-            max-width: 480px;
             flex: 1;
             margin: 0 auto;
             overflow: hidden;
             background: linear-gradient(180deg, #12141A 0%, #090A0D 100%);
-            border-left: 2px solid #2B2D42;
-            border-right: 2px solid #2B2D42;
             box-shadow: inset 0 0 30px rgba(0,0,0,0.8);
             touch-action: none;
         }
 
-        /* 警戒线自适应比例 */
+        /* 警戒线 */
         #danger-line {
             position: absolute;
             left: 0;
@@ -107,15 +127,15 @@
         }
         #danger-label {
             position: absolute;
-            right: 8px;
-            top: -18px;
-            font-size: 10px;
+            right: 12px;
+            top: -20px;
+            font-size: 12px;
             color: #E63946;
             font-weight: bold;
             letter-spacing: 1px;
         }
 
-        /* 顶部下落预览指示器 */
+        /* 下落指示球 */
         #dropper-preview {
             position: absolute;
             top: 4%;
@@ -127,39 +147,44 @@
             background-size: cover;
             background-position: center;
             border: 2px solid #D4AF37;
-            box-shadow: 0 0 12px rgba(212, 175, 55, 0.5);
+            box-shadow: 0 0 14px rgba(212, 175, 55, 0.6);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #FFF;
+            font-weight: bold;
+            text-shadow: 0 0 4px #000;
         }
 
-        /* Combo 连击漂浮字 */
+        /* 连击浮动大字 */
         .combo-text {
             position: absolute;
             font-weight: 900;
             color: #FFD166;
-            text-shadow: 0 0 10px #E63946, 2px 2px 0 #000;
+            text-shadow: 0 0 12px #E63946, 2px 2px 0 #000;
             pointer-events: none;
             z-index: 25;
             animation: comboFly 0.85s ease-out forwards;
             white-space: nowrap;
         }
         @keyframes comboFly {
-            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
-            20% { opacity: 1; transform: translate(-50%, -70%) scale(1.2); }
-            70% { opacity: 1; transform: translate(-50%, -100%) scale(1.0); }
-            100% { opacity: 0; transform: translate(-50%, -130%) scale(0.8); }
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.6); }
+            20% { opacity: 1; transform: translate(-50%, -70%) scale(1.3); }
+            70% { opacity: 1; transform: translate(-50%, -100%) scale(1.05); }
+            100% { opacity: 0; transform: translate(-50%, -130%) scale(0.85); }
         }
 
-        /* 屏幕微震动反馈 */
         .shake {
             animation: screenShake 0.15s cubic-bezier(.36,.07,.19,.97) both;
         }
         @keyframes screenShake {
-            10%, 90% { transform: translate3d(-1px, 0, 0); }
-            20%, 80% { transform: translate3d(2px, 0, 0); }
-            30%, 50%, 70% { transform: translate3d(-3px, 0, 0); }
-            40%, 60% { transform: translate3d(3px, 0, 0); }
+            10%, 90% { transform: translate3d(-2px, 0, 0); }
+            20%, 80% { transform: translate3d(3px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
         }
 
-        /* 结算弹层 */
+        /* 结算蒙层大图字号适配 */
         #game-over-mask {
             display: none;
             position: absolute;
@@ -169,68 +194,70 @@
             justify-content: center;
             align-items: center;
             z-index: 30;
-            padding: 16px;
+            padding: 18px;
         }
 
         #capture-area {
             width: 90%;
-            max-width: 340px;
+            max-width: 360px;
             aspect-ratio: 1 / 1;
             background: #16181E;
             border: 3px solid #D4AF37;
-            border-radius: 16px;
+            border-radius: 18px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 15px;
-            box-shadow: 0 0 25px rgba(212, 175, 55, 0.2);
+            padding: 20px;
+            box-shadow: 0 0 25px rgba(212, 175, 55, 0.25);
         }
 
         .poster-badge {
-            font-size: 12px;
+            font-size: 14px;
             color: #E63946;
             letter-spacing: 2px;
             font-weight: bold;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
         }
         .poster-title {
-            font-size: 21px;
+            font-size: 24px;
             font-weight: 900;
             color: #D4AF37;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             letter-spacing: 1px;
         }
 
         .poster-score-box {
             background: #0D0E12;
             border: 1px solid #333745;
-            padding: 6px 20px;
-            border-radius: 8px;
-            margin: 6px 0;
+            padding: 8px 24px;
+            border-radius: 10px;
+            margin: 8px 0;
             text-align: center;
         }
         .poster-score-num {
-            font-size: 34px;
+            font-size: 42px;
             color: #FFD166;
             font-weight: bold;
             font-family: 'Arial Black', sans-serif;
+            line-height: 1.1;
         }
 
         .poster-role-tag {
-            font-size: 13px;
+            font-size: 15px;
+            font-weight: bold;
             color: #E5E9F0;
-            margin-top: 6px;
-            padding: 3px 12px;
+            margin-top: 8px;
+            padding: 5px 15px;
             background: rgba(230, 57, 70, 0.25);
-            border-radius: 15px;
+            border-radius: 18px;
             border: 1px solid #E63946;
         }
 
         .poster-footer {
-            margin-top: 10px;
-            font-size: 10px;
-            color: #6C757D;
+            margin-top: 12px;
+            font-size: 12px;
+            color: #8D99AE;
             letter-spacing: 1px;
         }
 
@@ -238,24 +265,24 @@
             display: none;
             flex-direction: column;
             align-items: center;
-            margin-top: 12px;
+            margin-top: 14px;
             width: 100%;
         }
         #final-poster-img {
-            width: 80%;
-            max-width: 300px;
+            width: 85%;
+            max-width: 320px;
             aspect-ratio: 1 / 1;
-            border-radius: 16px;
+            border-radius: 18px;
             border: 3px solid #D4AF37;
             box-shadow: 0 0 20px rgba(0,0,0,0.8);
         }
         .save-tip {
-            font-size: 12px;
+            font-size: 14px;
             color: #FFD166;
             font-weight: bold;
-            margin-top: 8px;
+            margin-top: 10px;
             background: #252834;
-            padding: 5px 14px;
+            padding: 6px 16px;
             border-radius: 20px;
             border: 1px solid #3D4254;
         }
@@ -263,16 +290,16 @@
         .btn-group {
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            margin-top: 14px;
-            width: 80%;
-            max-width: 300px;
+            gap: 12px;
+            margin-top: 16px;
+            width: 85%;
+            max-width: 320px;
         }
 
         .btn-core {
             border: none;
-            padding: 11px 0;
-            font-size: 15px;
+            padding: 13px 0;
+            font-size: 17px;
             font-weight: bold;
             border-radius: 25px;
             cursor: pointer;
@@ -294,47 +321,48 @@
 </head>
 <body>
 
-<div class="top-bar">
-    <div class="title-group">
-        <h1>合成大苗哥·雷霆版</h1>
-        <div class="subtitle">慎点!!! 苗哥真爱战力挑战</div>
+<div id="arcade-container">
+    <div class="top-bar">
+        <div class="title-group">
+            <h1>合成大苗哥·雷霆版</h1>
+            <div class="subtitle">慎点!!! 苗哥真爱战力挑战</div>
+        </div>
+        <div class="score-board">
+            <div class="score-label">总战力分</div>
+            <div class="score-val" id="score">0</div>
+        </div>
     </div>
-    <div class="score-board">
-        <div class="score-label">总战力分</div>
-        <div class="score-val" id="score">0</div>
-    </div>
-</div>
 
-<div id="game-wrapper">
-    <div id="danger-line"><span id="danger-label">极限真爱警戒线 ⚠️</span></div>
-    <div id="dropper-preview"></div>
+    <div id="game-wrapper">
+        <div id="danger-line"><span id="danger-label">极限真爱警戒线 ⚠️</span></div>
+        <div id="dropper-preview"></div>
 
-    <div id="game-over-mask">
-        <div id="capture-area">
-            <div class="poster-badge">⚡ 终局战报 · 战损认证 ⚡</div>
-            <div class="poster-title">合成大苗哥·雷霆版</div>
-            <div class="poster-score-box">
-                <div style="font-size: 11px; color:#8D99AE;">最终武力值</div>
-                <div class="poster-score-num" id="final-score">0</div>
+        <div id="game-over-mask">
+            <div id="capture-area">
+                <div class="poster-badge">⚡ 终局战报 · 战损认证 ⚡</div>
+                <div class="poster-title">合成大苗哥·雷霆版</div>
+                <div class="poster-score-box">
+                    <div style="font-size: 12px; color:#8D99AE;">最终武力值</div>
+                    <div class="poster-score-num" id="final-score">0</div>
+                </div>
+                <div class="poster-role-tag" id="max-role-tag">最高形态：-</div>
+                <div class="poster-footer">© 演员谢苗超话 · 雷霆出击认证</div>
             </div>
-            <div class="poster-role-tag" id="max-role-tag">最高形态：-</div>
-            <div class="poster-footer">© 演员谢苗超话 · 雷霆出击认证</div>
-        </div>
 
-        <div class="mobile-poster-box" id="mobile-poster-box">
-            <img id="final-poster-img" src="" alt="专属战绩卡">
-            <div class="save-tip">👆 长按上方图片即可保存到手机相册 👆</div>
-        </div>
+            <div class="mobile-poster-box" id="mobile-poster-box">
+                <img id="final-poster-img" src="" alt="专属战绩卡">
+                <div class="save-tip">👆 长按上方图片即可保存到相册 👆</div>
+            </div>
 
-        <div class="btn-group">
-            <button class="btn-core btn-gold" id="gen-poster-btn" onclick="generatePoster()">📸 生成 1:1 专属战报</button>
-            <button class="btn-core btn-dark" onclick="location.reload()">重燃战火 🔁</button>
+            <div class="btn-group">
+                <button class="btn-core btn-gold" id="gen-poster-btn" onclick="generatePoster()">📸 生成 1:1 专属战报</button>
+                <button class="btn-core btn-dark" onclick="location.reload()">重燃战火 🔁</button>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
-    // 音效系统
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
     let audioCtx = null;
 
@@ -429,7 +457,6 @@
         else playWhooshSound();
     }
 
-    // 连击飘字
     let comboCount = 0;
     let lastMergeTime = 0;
     const COMBO_WORDS = [
@@ -458,7 +485,7 @@
             span.innerText = `${word} Combo x${comboCount}!`;
             span.style.left = `${x}px`;
             span.style.top = `${y}px`;
-            span.style.fontSize = `${Math.min(24, 15 + comboCount * 2)}px`;
+            span.style.fontSize = `${Math.min(28, 18 + comboCount * 2)}px`;
             wrapper.appendChild(span);
             setTimeout(() => span.remove(), 850);
         }
@@ -471,27 +498,27 @@
     const finalScoreEl = document.getElementById('final-score');
     const maxRoleTag = document.getElementById('max-role-tag');
 
-    // 动态获取手机容器尺寸
-    let width = wrapper.clientWidth || window.innerWidth;
-    let height = wrapper.clientHeight || (window.innerHeight - 60);
+    const rect = wrapper.getBoundingClientRect();
+    let width = rect.width;
+    let height = rect.height;
 
-    // 根据手机实际屏幕宽度动态缩放小球半径，防止球体溢出或过大
-    const scaleFactor = Math.min(1.05, Math.max(0.78, width / 390));
+    // 重点放大：调高基准缩放比率，确保手机大屏小屏球体都足够饱满
+    const scaleFactor = Math.min(1.2, Math.max(0.95, width / 380));
 
     const RAW_ROLES = [
-        { level: 0,  name: "成瞎子", baseR: 16 },
-        { level: 1,  name: "少林小子",   baseR: 21 },
-        { level: 2,  name: "小飞侠", baseR: 27 },
-        { level: 3,  name: "宰相小甘罗",   baseR: 33 },
-        { level: 4,  name: "体育老师", baseR: 40 },
-        { level: 5,  name: "齐天大圣",   baseR: 48 },
-        { level: 6,  name: "东百阿sir", baseR: 56 },
-        { level: 7,  name: "网大一哥",   baseR: 64 },
-        { level: 8,  name: "好辣好辣",   baseR: 73 },
-        { level: 9,  name: "荧幕巨星", baseR: 83 },
-        { level: 10, name: "英雄母亲", baseR: 94 },
-        { level: 11, name: "华夏第一美胸",   baseR: 106 },
-        { level: 12, name: "苗哥本尊", baseR: 120 }
+        { level: 0,  name: "成瞎子", baseR: 22 },
+        { level: 1,  name: "少林小子",   baseR: 28 },
+        { level: 2,  name: "小飞侠", baseR: 35 },
+        { level: 3,  name: "宰相小甘罗",   baseR: 43 },
+        { level: 4,  name: "体育老师", baseR: 52 },
+        { level: 5,  name: "齐天大圣",   baseR: 62 },
+        { level: 6,  name: "东百阿sir", baseR: 72 },
+        { level: 7,  name: "网大一哥",   baseR: 83 },
+        { level: 8,  name: "好辣好辣",   baseR: 95 },
+        { level: 9,  name: "荧幕巨星", baseR: 107 },
+        { level: 10, name: "英雄母亲", baseR: 119 },
+        { level: 11, name: "华夏第一美胸",   baseR: 131 },
+        { level: 12, name: "苗哥本尊", baseR: 145 }
     ];
 
     const ROLES = RAW_ROLES.map(item => ({
@@ -500,7 +527,6 @@
         radius: Math.round(item.baseR * scaleFactor)
     }));
 
-    // 图片自动兼容
     const roleImages = [];
     function initImageAssets() {
         ROLES.forEach((role, index) => {
@@ -553,7 +579,6 @@
     const runner = Runner.create();
     Runner.run(runner, engine);
 
-    // 严丝合缝贴合手机屏幕边界的刚体墙
     const wallThick = 60;
     const ground = Bodies.rectangle(width / 2, height + wallThick / 2, width * 2, wallThick, { 
         isStatic: true, friction: 0.8, render: { visible: false } 
@@ -566,7 +591,6 @@
     });
     Composite.add(engine.world, [ground, leftWall, rightWall]);
 
-    // 绘制头像与电金外环
     Events.on(render, 'afterRender', () => {
         const ctx = render.context;
         const bodies = Composite.allBodies(engine.world);
@@ -590,10 +614,13 @@
                 } else {
                     ctx.fillStyle = "#1E2028";
                     ctx.fill();
+                    // 提升小球缺省名称的字号与对比度
                     ctx.fillStyle = "#D4AF37";
-                    ctx.font = `bold ${Math.max(10, r * 0.35)}px sans-serif`;
+                    ctx.font = `bold ${Math.max(13, r * 0.36)}px sans-serif`;
                     ctx.textAlign = 'center';
                     ctx.textBaseline = 'middle';
+                    ctx.shadowColor = "#000";
+                    ctx.shadowBlur = 4;
                     ctx.fillText(body.roleInfo.name, 0, 0);
                 }
 
@@ -602,7 +629,7 @@
                 ctx.translate(x, y);
                 ctx.beginPath();
                 ctx.arc(0, 0, r, 0, Math.PI * 2);
-                ctx.lineWidth = body.roleInfo.level >= 10 ? 3 : 2;
+                ctx.lineWidth = body.roleInfo.level >= 10 ? 4 : 2.5;
                 ctx.strokeStyle = body.roleInfo.level >= 10 ? '#FFD166' : '#D4AF37';
                 ctx.stroke();
                 ctx.restore();
@@ -629,6 +656,7 @@
         } else {
             previewEl.style.backgroundColor = "#2B2D42";
             previewEl.innerText = info.name;
+            previewEl.style.fontSize = Math.max(13, r * 0.36) + 'px';
         }
 
         updatePreviewPos(currentX);
@@ -661,7 +689,7 @@
         setTimeout(() => {
             if (!isGameOver) {
                 setupNextDrop();
-                previewEl.style.display = 'block';
+                previewEl.style.display = 'flex';
                 canDrop = true;
             }
         }, 500);
@@ -712,7 +740,6 @@
         });
     });
 
-    // 警戒线按比例检测
     const DANGER_Y = height * 0.15;
     setInterval(() => {
         if (isGameOver) return;
@@ -755,44 +782,19 @@
         });
     }
 
-    // 移动端精准触控
-    function handleTouchMove(e) {
-        const rect = wrapper.getBoundingClientRect();
+    function handlePointerCoord(e) {
+        const box = wrapper.getBoundingClientRect();
         const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-        updatePreviewPos(clientX - rect.left);
+        updatePreviewPos(clientX - box.left);
     }
 
-    wrapper.addEventListener('touchstart', (e) => {
-        handleTouchMove(e);
-    }, { passive: true });
+    wrapper.addEventListener('touchstart', (e) => { handlePointerCoord(e); }, { passive: true });
+    wrapper.addEventListener('touchmove', (e) => { if (canDrop) handlePointerCoord(e); }, { passive: true });
+    wrapper.addEventListener('touchend', () => { dropRole(); });
 
-    wrapper.addEventListener('touchmove', (e) => {
-        if (!canDrop) return;
-        handleTouchMove(e);
-    }, { passive: true });
-
-    wrapper.addEventListener('touchend', () => {
-        dropRole();
-    });
-
-    // 电脑端鼠标兼容
-    wrapper.addEventListener('pointerdown', (e) => {
-        if (e.pointerType === 'mouse') {
-            const rect = wrapper.getBoundingClientRect();
-            updatePreviewPos(e.clientX - rect.left);
-        }
-    });
-
-    wrapper.addEventListener('pointermove', (e) => {
-        if (e.pointerType === 'mouse' && canDrop) {
-            const rect = wrapper.getBoundingClientRect();
-            updatePreviewPos(e.clientX - rect.left);
-        }
-    });
-
-    wrapper.addEventListener('pointerup', (e) => {
-        if (e.pointerType === 'mouse') dropRole();
-    });
+    wrapper.addEventListener('mousedown', (e) => { handlePointerCoord(e); });
+    wrapper.addEventListener('mousemove', (e) => { if (canDrop) handlePointerCoord(e); });
+    wrapper.addEventListener('mouseup', () => { dropRole(); });
 
     setupNextDrop();
 </script>
