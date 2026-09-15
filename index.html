@@ -565,7 +565,7 @@
     
     <div class="landing-pill">
         <img src="avatar-logo.png" alt="Logo" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI2NjYyIgZD0iTTEyIDJDMiAyIDEyIDIgMTIgMnptMCAyMGMtNS41MiAwLTEwLTQuNDgtMTAtMTBzNC40OC0xMCAxMC0xMCAxMCA0LjQ4IDEwIDEwLTQuNDggMTAtMTAgMTB6bTAtMTZjLTIuNzYgMC01IDIuMjQtNSA1czIuMjQgNSA1IDUgNS0yLjI0IDUtNS0yLjI0LTUtNS01em0wIDhjLTEuNjYgMC0zLTEuMzQtMy0zczEuMzQtMyAzLTMgMyAxLjM0IDMgMy0xLjM0IDMtMyAzem0wIDEwYzMuODYgMCA3LjI2LTIuMDggOS01LjE3LTEuNDItMi42NS00Ljg1LTQuODMtOS00Ljgzcy03LjU4IDIuMTgtOSA0LjgzYzEuNzQgMy4wOSA1LjE0IDUuMTcgOSA1LjE3eiIvPjwvc3ZnPg=='">
-        <span>演员谢苗超话</span>
+        <span>演员谢苗超话制作</span>
     </div>
     
     <div class="landing-credit">
@@ -1180,7 +1180,7 @@
         const restoredBodies = data.bodies.map(d => {
             const rInfo = ROLES[d.level];
             const circle = Bodies.circle(d.x, d.y, rInfo.radius, {
-                angle: d.angle, restitution: 0.05, friction: 0.01, density: 0.003, render: { visible: false }
+                angle: d.angle, restitution: 0.02, friction: 0.005, density: 0.005, render: { visible: false }
             });
             Matter.Body.setVelocity(circle, { x: d.vx, y: d.vy });
             circle.roleInfo = rInfo;
@@ -1214,7 +1214,8 @@
         currentDragTool = type;
         
         minBlastRadius = ROLES[0].radius;
-        maxBlastRadius = ROLES[12].radius * 1.5; 
+        // 同步原版炸弹最大范围为15级的1.5倍
+        maxBlastRadius = ROLES[15].radius * 1.5; 
         
         if (type === 'bomb') {
             ghostIcon.innerText = '💣';
@@ -1496,28 +1497,34 @@
     let width = rect.width;
     let height = rect.height;
 
-    const scaleFactor = Math.min(1.2, Math.max(0.95, width / 380));
+    // 同步原版缩放系数
+    const scaleFactor = Math.min(1.0, Math.max(0.85, width / 400));
 
+    // 同步为16个角色，补齐基础尺寸
     const RAW_ROLES = [
-        { level: 0,  name: "成瞎子", baseR: 22 },
-        { level: 1,  name: "少林小子",   baseR: 28 },
-        { level: 2,  name: "小飞侠", baseR: 35 },
-        { level: 3,  name: "宰相小甘罗",   baseR: 40 },
-        { level: 4,  name: "体育老师", baseR: 45 },
-        { level: 5,  name: "齐天大圣",   baseR: 50 },
-        { level: 6,  name: "东百阿sir", baseR: 56 },
-        { level: 7,  name: "网大一哥",   baseR: 62 },
-        { level: 8,  name: "好辣好辣",   baseR: 68 },
-        { level: 9,  name: "荧幕巨星", baseR: 74 },
-        { level: 10, name: "英雄母亲", baseR: 80 },
-        { level: 11, name: "华夏第一美胸",   baseR: 86 },
-        { level: 12, name: "苗哥本尊", baseR: 94 }
+        { level: 0,  name: "成瞎子", baseR: 20 },
+        { level: 1,  name: "少林小子",   baseR: 24 },
+        { level: 2,  name: "小飞侠", baseR: 28 },
+        { level: 3,  name: "宰相小甘罗",   baseR: 33 },
+        { level: 4,  name: "体育老师", baseR: 38 },
+        { level: 5,  name: "齐天大圣",   baseR: 44 },
+        { level: 6,  name: "东百阿sir", baseR: 50 },
+        { level: 7,  name: "网大一哥",   baseR: 54 },
+        { level: 8,  name: "好辣好辣",   baseR: 58 },
+        { level: 9,  name: "荧幕巨星", baseR: 62 },
+        { level: 10, name: "英雄母亲", baseR: 66 },
+        { level: 11, name: "华夏第一美胸",   baseR: 70 },
+        { level: 12, name: "待定角色A", baseR: 74 }, // <-- 请在这里填入角色名
+        { level: 13, name: "待定角色B", baseR: 78 }, // <-- 请在这里填入角色名
+        { level: 14, name: "待定角色C", baseR: 82 }, // <-- 请在这里填入角色名
+        { level: 15, name: "苗哥本尊", baseR: 86 }
     ];
 
     const ROLES = RAW_ROLES.map(item => ({
         level: item.level,
         name: item.name,
-        radius: Math.round(item.baseR * scaleFactor)
+        // 前6级保持原比例不随屏幕放大
+        radius: item.level <= 6 ? item.baseR : Math.round(item.baseR * scaleFactor)
     }));
 
     const roleImages = [];
@@ -1550,7 +1557,7 @@
 
     const { Engine, Render, Runner, Bodies, Composite, Events } = Matter;
     const engine = Engine.create({ enableSleeping: false });
-    engine.gravity.y = 1.6; 
+    engine.gravity.y = 1.8; 
 
     const render = Render.create({
         element: wrapper,
@@ -1612,8 +1619,9 @@
                 ctx.translate(x, y);
                 ctx.beginPath();
                 ctx.arc(0, 0, r, 0, Math.PI * 2);
-                ctx.lineWidth = body.roleInfo.level >= 10 ? 4 : 2.5;
-                ctx.strokeStyle = body.roleInfo.level >= 10 ? '#FFD166' : '#D4AF37';
+                // 描边效果与原版的顶级视觉对齐
+                ctx.lineWidth = body.roleInfo.level >= 13 ? 4 : 2.5;
+                ctx.strokeStyle = body.roleInfo.level >= 13 ? '#FFD166' : '#D4AF37';
                 ctx.stroke();
                 ctx.restore();
             }
@@ -1621,12 +1629,14 @@
     });
 
     function setupNextDrop() {
+        // 同步原版随机生成下落球的解锁节奏
         let maxDropLevel = 3; 
         if (score > 300) maxDropLevel = 4;
-        if (highestLevel >= 4) maxDropLevel = 5;
-        if (highestLevel >= 6) maxDropLevel = 6;
-        if (highestLevel >= 8) maxDropLevel = 7;
-        if (highestLevel >= 10) maxDropLevel = 8; 
+        if (highestLevel >= 5) maxDropLevel = 5;
+        if (highestLevel >= 7) maxDropLevel = 6;
+        if (highestLevel >= 9) maxDropLevel = 7;
+        if (highestLevel >= 11) maxDropLevel = 8; 
+        if (highestLevel >= 13) maxDropLevel = 9; 
 
         currentDropLevel = Math.floor(Math.random() * maxDropLevel);
         const info = ROLES[currentDropLevel];
@@ -1663,9 +1673,9 @@
         const info = ROLES[currentDropLevel];
         const dropY = height * 0.04; 
         const circle = Bodies.circle(currentX, dropY, info.radius, {
-            restitution: 0.05, 
-            friction: 0.01,   
-            density: 0.003,
+            restitution: 0.02, 
+            friction: 0.005,   
+            density: 0.005,
             render: { visible: false }
         });
         circle.roleInfo = info;
@@ -1702,15 +1712,16 @@
                         Composite.remove(engine.world, [bodyA, bodyB]);
 
                         const newCircle = Bodies.circle(midX, midY, nextInfo.radius, {
-                            restitution: 0.05,
-                            friction: 0.01,
-                            density: 0.003,
+                            restitution: 0.02,
+                            friction: 0.005,
+                            density: 0.005,
                             render: { visible: false }
                         });
                         newCircle.roleInfo = nextInfo;
                         Composite.add(engine.world, newCircle);
 
-                        if (nextLevel >= 7) {
+                        // 同步原版，10级及以上才触发合成屏幕震动
+                        if (nextLevel >= 10) {
                             wrapper.classList.add('shake');
                             setTimeout(() => wrapper.classList.remove('shake'), 160);
                         }
