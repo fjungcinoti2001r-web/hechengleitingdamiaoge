@@ -6,7 +6,7 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>合成大苗哥·雷霆版 (慎点!!!)</title>
+    <title>合成大苗哥·雷霆版</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <style>
@@ -50,6 +50,91 @@
             }
         }
 
+        /* ★ 初始启动封面页排版 ★ */
+        #landing-page {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(10, 10, 15, 1);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100000; 
+        }
+        .landing-title {
+            font-size: 42px;
+            font-weight: 900;
+            color: #D4AF37;
+            margin-bottom: 5px;
+            letter-spacing: 2px;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+            text-align: center;
+        }
+        .init-subtitle {
+            font-size: 22px;
+            color: #FF334B;
+            font-weight: 900;
+            letter-spacing: 4px;
+            margin-bottom: 35px;
+            text-shadow: 0 0 10px rgba(255, 51, 75, 0.5);
+        }
+        .landing-pill {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(212, 175, 55, 0.08);
+            border: 2px solid #D4AF37;
+            border-radius: 30px;
+            padding: 6px 20px 6px 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 10px rgba(212, 175, 55, 0.15);
+        }
+        .landing-pill img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            margin-right: 10px;
+            background-color: #fff;
+            border: 2px solid #D4AF37;
+            object-fit: contain;
+        }
+        .landing-pill span {
+            font-size: 16px;
+            color: #E5E9F0;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        .landing-credit {
+            font-size: 12px;
+            color: #8D99AE;
+            border: 1px dashed #4A4E69;
+            border-radius: 15px;
+            padding: 8px 20px;
+            margin-bottom: 50px;
+            letter-spacing: 1px;
+            background: rgba(43, 45, 66, 0.3);
+        }
+
+        /* 模式选择页（隐藏状态） */
+        #init-mask {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(10, 10, 15, 0.98);
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 99998;
+        }
+        .init-desc {
+            color: #8D99AE;
+            font-size: 15px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 25px;
+            padding: 0 20px;
+        }
+
         .top-bar {
             width: 100%;
             padding: 12px 18px;
@@ -71,7 +156,7 @@
         }
 
         .title-group h1 {
-            font-size: 22px;
+            font-size: 20px;
             color: #D4AF37;
             letter-spacing: 1px;
             font-weight: 900;
@@ -80,7 +165,7 @@
             margin: 0;
         }
         .subtitle {
-            font-size: 14px;
+            font-size: 13px;
             color: #FF334B;
             font-weight: 900;
             letter-spacing: 1.5px;
@@ -271,34 +356,6 @@
         }
         #global-save-list button { position: relative; }
 
-        #init-mask {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(10, 10, 15, 0.98);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 99999;
-        }
-        .init-title {
-            font-size: 36px;
-            font-weight: 900;
-            color: #D4AF37;
-            margin-bottom: 20px;
-            letter-spacing: 2px;
-            text-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
-            text-align: center;
-        }
-        .init-desc {
-            color: #8D99AE;
-            font-size: 14px;
-            font-weight: bold;
-            text-align: center;
-            margin-bottom: 30px;
-            padding: 0 20px;
-        }
-
         #pause-mask, #game-over-mask {
             display: none;
             position: absolute;
@@ -419,7 +476,7 @@
             display: flex;
             flex-direction: column;
             gap: 12px;
-            margin-top: 16px;
+            margin-top: 10px;
             width: 85%;
             max-width: 320px;
         }
@@ -501,10 +558,29 @@
     <button class="btn-core btn-dark" style="width:100%;" onclick="closeLoadMenu()">返回</button>
 </div>
 
+<!-- ★ 初始启动封面页 ★ -->
+<div id="landing-page">
+    <div class="landing-title">合成大苗哥</div>
+    <div class="init-subtitle">雷霆版</div>
+    
+    <div class="landing-pill">
+        <img src="avatar-logo.png" alt="Logo" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI2NjYyIgZD0iTTEyIDJDMiAyIDEyIDIgMTIgMnptMCAyMGMtNS41MiAwLTEwLTQuNDgtMTAtMTBzNC40OC0xMCAxMC0xMCAxMCA0LjQ4IDEwIDEwLTQuNDggMTAtMTAgMTB6bTAtMTZjLTIuNzYgMC01IDIuMjQtNSA1czIuMjQgNSA1IDUgNS0yLjI0IDUtNS0yLjI0LTUtNS01em0wIDhjLTEuNjYgMC0zLTEuMzQtMy0zczEuMzQtMyAzLTMgMyAxLjM0IDMgMy0xLjM0IDMtMyAzem0wIDEwYzMuODYgMCA3LjI2LTIuMDggOS01LjE3LTEuNDItMi42NS00Ljg1LTQuODMtOS00Ljgzcy03LjU4IDIuMTgtOSA0LjgzYzEuNzQgMy4wOSA1LjE0IDUuMTcgOSA1LjE3eiIvPjwvc3ZnPg=='">
+        <span>演员谢苗超话制作</span>
+    </div>
+    
+    <div class="landing-credit">
+        制作：林科森 | 制图：老周
+    </div>
+
+    <button class="btn-core btn-gold" style="width: 220px; font-size: 20px; padding: 16px 0;" onclick="goToModeSelect()">点击进入</button>
+</div>
+
+<!-- ★ 模式选择页 ★ -->
 <div id="init-mask">
-    <div class="init-title">合成大苗哥<br><span style="font-size: 24px; color: #FF334B;">雷霆版</span></div>
-    <div class="init-desc">请选择适合你的挑战模式</div>
-    <div class="btn-group" style="width: 250px; gap: 15px;">
+    <div class="landing-title">合成大苗哥</div>
+    <div class="init-subtitle">雷霆版</div>
+    <div class="init-desc">请选择适合你的挑战模式：</div>
+    <div class="btn-group" style="width: 250px; gap: 15px; margin-top: 0;">
         <button class="btn-core btn-gold" onclick="startGame('easy')">
             🟢 初级模式<br><span style="font-size:12px;font-weight:normal;color:#333;">含 炸弹+摇晃道具，开启物理体感</span>
         </button>
@@ -523,7 +599,7 @@
 <div id="arcade-container">
     <div class="top-bar">
         <div class="title-group">
-            <h1>合成大苗哥·雷霆版</h1>
+            <h1 style="font-size: 20px;">合成大苗哥·雷霆版</h1>
             <div class="subtitle">慎点!!! 苗哥真爱战力挑战</div>
         </div>
         <div class="header-layout">
@@ -608,7 +684,6 @@
 </div>
 
 <script>
-    // ========== ★ 雷霆版原生音效系统 100% 还原 ★ ==========
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
     let audioCtx = null;
     
@@ -697,68 +772,69 @@
     }
 
     function playSoundByLevel(level) {
-        if (level === 10) playSwordSound();
-        else if (level >= 11) playGrandTriumphSound();
-        else if (level >= 6) playHeavyPunchSound(level);
-        else playWhooshSound();
+        try {
+            if (level === 10) playSwordSound();
+            else if (level >= 11) playGrandTriumphSound();
+            else if (level >= 6) playHeavyPunchSound(level);
+            else playWhooshSound();
+        } catch(e) {}
     }
 
-    // 道具专属音效
-    function playBombSound() {
-        initAudio();
-        const bufferSize = audioCtx.sampleRate * 0.5;
-        const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-        const data = buffer.getChannelData(0);
-        for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
-        
-        const noise = audioCtx.createBufferSource();
-        noise.buffer = buffer;
-        const noiseFilter = audioCtx.createBiquadFilter();
-        noiseFilter.type = 'lowpass';
-        noiseFilter.frequency.setValueAtTime(1000, audioCtx.currentTime);
-        noiseFilter.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.5);
+    function playSoundEffect(type, comboLevel = 1) {
+        try {
+            initAudio();
+            if(!audioCtx) return;
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
 
-        const nGain = audioCtx.createGain();
-        nGain.gain.setValueAtTime(0.8, audioCtx.currentTime);
-        nGain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+            if (type === 'combo') {
+                oscillator.type = 'square';
+                const baseFreq = 800 + (comboLevel * 100); 
+                oscillator.frequency.setValueAtTime(baseFreq, audioCtx.currentTime);
+                oscillator.frequency.exponentialRampToValueAtTime(baseFreq * 1.5, audioCtx.currentTime + 0.1);
+                gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+                oscillator.start(audioCtx.currentTime);
+                oscillator.stop(audioCtx.currentTime + 0.15);
+            } else if (type === 'bombExplode') {
+                const bufferSize = audioCtx.sampleRate * 0.5;
+                const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+                
+                const noise = audioCtx.createBufferSource();
+                noise.buffer = buffer;
+                const noiseFilter = audioCtx.createBiquadFilter();
+                noiseFilter.type = 'lowpass';
+                noiseFilter.frequency.setValueAtTime(1000, audioCtx.currentTime);
+                noiseFilter.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.5);
 
-        noise.connect(noiseFilter);
-        noiseFilter.connect(nGain);
-        nGain.connect(audioCtx.destination);
-        noise.start();
+                const nGain = audioCtx.createGain();
+                nGain.gain.setValueAtTime(0.8, audioCtx.currentTime);
+                nGain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
 
-        const osc = audioCtx.createOscillator();
-        const gainNode = audioCtx.createGain();
-        osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(150, audioCtx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(20, audioCtx.currentTime + 0.5);
-        gainNode.gain.setValueAtTime(1, audioCtx.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
-        osc.connect(gainNode);
-        gainNode.connect(audioCtx.destination);
-        osc.start(audioCtx.currentTime);
-        osc.stop(audioCtx.currentTime + 0.5);
-    }
+                noise.connect(noiseFilter);
+                noiseFilter.connect(nGain);
+                nGain.connect(audioCtx.destination);
+                noise.start();
 
-    function playShakeSound() {
-        initAudio();
-        const osc = audioCtx.createOscillator();
-        const gainNode = audioCtx.createGain();
-        osc.type = 'sawtooth';
-        osc.frequency.setValueAtTime(400, audioCtx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.3);
-        gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
-        osc.connect(gainNode);
-        gainNode.connect(audioCtx.destination);
-        osc.start(audioCtx.currentTime);
-        osc.stop(audioCtx.currentTime + 0.3);
+                oscillator.type = 'sawtooth';
+                oscillator.frequency.setValueAtTime(150, audioCtx.currentTime);
+                oscillator.frequency.exponentialRampToValueAtTime(20, audioCtx.currentTime + 0.5);
+                gainNode.gain.setValueAtTime(1, audioCtx.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+                oscillator.start(audioCtx.currentTime);
+                oscillator.stop(audioCtx.currentTime + 0.5);
+            }
+        } catch(e) {}
     }
 
     let bgmStarted = false;
     let sensorsStarted = false;
     let lastAcc = { x: 0, y: 0, z: 0 };
-    let lastShakeTime = 0;
+    let lastShakeTime = 0; 
     
     let gameMode = 'easy'; 
     const modeNames = { 'easy': '初级', 'medium': '中级', 'hard': '高级' };
@@ -777,6 +853,7 @@
     const bgm = document.getElementById('bgm');
     const pauseMask = document.getElementById('pause-mask');
     const initMask = document.getElementById('init-mask');
+    const landingPage = document.getElementById('landing-page');
     
     const toolsContainer = document.getElementById('tools-container');
     const bombContainer = document.getElementById('bomb-container');
@@ -792,6 +869,13 @@
     const initLoadBtn = document.getElementById('init-load-btn');
     const saveToast = document.getElementById('save-toast');
 
+    // ★ 步骤 1：点击进入切换页面 ★
+    function goToModeSelect() {
+        landingPage.style.display = 'none';
+        initMask.style.display = 'flex';
+    }
+
+    // ★ 步骤 2：启动游戏 ★
     function startGame(mode) {
         initMask.style.display = 'none';
         gameMode = mode;
@@ -812,7 +896,7 @@
         try {
             initAudio();
             if (bgm) {
-                bgm.volume = 0.15;
+                bgm.volume = 0.25;
                 let playPromise = bgm.play();
                 if (playPromise !== undefined) {
                     playPromise.then(() => {
@@ -1042,7 +1126,7 @@
         if (!bgmStarted && bgm) {
             try {
                 initAudio();
-                bgm.volume = 0.15;
+                bgm.volume = 0.25;
                 let playPromise = bgm.play();
                 if (playPromise !== undefined) {
                     playPromise.then(() => {
@@ -1107,12 +1191,9 @@
         Composite.add(engine.world, restoredBodies);
         
         closeLoadMenu();
-        if (initMask.style.display !== 'none') {
-            initMask.style.display = 'none'; 
-        }
-        if (isPaused) {
-            togglePause(); 
-        }
+        if (initMask.style.display !== 'none') initMask.style.display = 'none'; 
+        if (landingPage.style.display !== 'none') landingPage.style.display = 'none';
+        if (isPaused) togglePause(); 
     }
 
     bombContainer.addEventListener('mousedown', (e) => startDragTool('bomb', e));
@@ -1234,7 +1315,7 @@
         
         Composite.remove(engine.world, toRemove);
         scoreEl.innerText = score;
-        try { playBombSound(); } catch(e){}
+        try { playSoundEffect('bombExplode'); } catch(e){}
 
         const wave = document.createElement('div');
         wave.style.position = 'absolute';
@@ -1264,25 +1345,30 @@
         shakeCount--;
         updateShakeUI();
         
+        // ★ 给摇晃道具也加上 5秒 免死金牌 ★
+        lastShakeTime = Date.now();
+        dangerCount = 0;
+
         const bodies = Composite.allBodies(engine.world);
         
         bodies.forEach(b => {
             if (b.roleInfo && !b.isStatic) {
                 const dist = Matter.Vector.magnitude(Matter.Vector.sub(b.position, {x, y}));
                 if (dist < radius + b.roleInfo.radius) {
-                    const forceMagnitude = (0.05 + Math.random() * 0.05) * b.mass;
+                    // 调低抛飞系数，防止过度穿模
+                    const forceMagnitude = (0.02 + Math.random() * 0.02) * b.mass;
                     let angle = Math.atan2(b.position.y - y, b.position.x - x);
                     if (dist < 5) angle = Math.random() * Math.PI * 2; 
                     
                     const forceX = Math.cos(angle) * forceMagnitude;
-                    const forceY = Math.sin(angle) * forceMagnitude - (0.08 * b.mass); 
+                    const forceY = -(0.03 * b.mass); // 固定受控升力
                     
                     Matter.Body.applyForce(b, b.position, { x: forceX, y: forceY });
                 }
             }
         });
         
-        try { playShakeSound(); } catch(e){}
+        try { playGrandTriumphSound(); } catch(e){}
 
         const wave = document.createElement('div');
         wave.style.position = 'absolute';
@@ -1337,6 +1423,7 @@
         lastMergeTime = now;
 
         if (comboCount >= 2) {
+            playSoundEffect('combo', comboCount);
             const word = COMBO_WORDS[Math.floor(Math.random() * COMBO_WORDS.length)];
             const span = document.createElement('div');
             span.className = 'combo-text';
@@ -1386,11 +1473,12 @@
             const now = Date.now();
             if (now - lastShakeTime > 800) {
                 lastShakeTime = now;
+                dangerCount = 0; // 重置死局计数
                 const bodies = Composite.allBodies(engine.world);
                 bodies.forEach(b => {
                     if (b.roleInfo && !b.isStatic) {
-                        const forceX = (Math.random() - 0.5) * 0.05 * b.mass;
-                        const forceY = -(0.05 + Math.random() * 0.08) * b.mass;
+                        const forceX = (Math.random() - 0.5) * 0.03 * b.mass;
+                        const forceY = -(0.03 + Math.random() * 0.04) * b.mass;
                         Matter.Body.applyForce(b, b.position, { x: forceX, y: forceY });
                     }
                 });
@@ -1414,20 +1502,21 @@
 
     const scaleFactor = Math.min(1.2, Math.max(0.95, width / 380));
 
+    // ★ 全面瘦身版：从宰相小甘罗（Level 3）开始大幅缩小尺寸 ★
     const RAW_ROLES = [
         { level: 0,  name: "成瞎子", baseR: 22 },
         { level: 1,  name: "少林小子",   baseR: 28 },
         { level: 2,  name: "小飞侠", baseR: 35 },
-        { level: 3,  name: "宰相小甘罗",   baseR: 43 },
-        { level: 4,  name: "体育老师", baseR: 52 },
-        { level: 5,  name: "齐天大圣",   baseR: 62 },
-        { level: 6,  name: "东百阿sir", baseR: 72 },
-        { level: 7,  name: "网大一哥",   baseR: 80 },
-        { level: 8,  name: "好辣好辣",   baseR: 88 },
-        { level: 9,  name: "荧幕巨星", baseR: 97 },
-        { level: 10, name: "英雄母亲", baseR: 106 },
-        { level: 11, name: "华夏第一美胸",   baseR: 116 },
-        { level: 12, name: "苗哥本尊", baseR: 128 }
+        { level: 3,  name: "宰相小甘罗",   baseR: 40 },
+        { level: 4,  name: "体育老师", baseR: 45 },
+        { level: 5,  name: "齐天大圣",   baseR: 50 },
+        { level: 6,  name: "东百阿sir", baseR: 56 },
+        { level: 7,  name: "网大一哥",   baseR: 62 },
+        { level: 8,  name: "好辣好辣",   baseR: 68 },
+        { level: 9,  name: "荧幕巨星", baseR: 74 },
+        { level: 10, name: "英雄母亲", baseR: 80 },
+        { level: 11, name: "华夏第一美胸",   baseR: 86 },
+        { level: 12, name: "苗哥本尊", baseR: 94 }
     ];
 
     const ROLES = RAW_ROLES.map(item => ({
@@ -1483,11 +1572,13 @@
     const runner = Runner.create();
     Runner.run(runner, engine);
 
-    const wallThick = 60;
-    const ground = Bodies.rectangle(width / 2, height + wallThick / 2, width * 2, wallThick, { isStatic: true, friction: 0.8, render: { visible: false } });
-    const leftWall = Bodies.rectangle(-wallThick / 2, height / 2, wallThick, height * 2, { isStatic: true, friction: 0.8, render: { visible: false } });
-    const rightWall = Bodies.rectangle(width + wallThick / 2, height / 2, wallThick, height * 2, { isStatic: true, friction: 0.8, render: { visible: false } });
-    Composite.add(engine.world, [ground, leftWall, rightWall]);
+    // ★ 物理修复：加厚墙壁与天花板罩子，绝对防穿模 ★
+    const wallThick = 500; 
+    const ground = Bodies.rectangle(width / 2, height + wallThick / 2, width * 3, wallThick, { isStatic: true, friction: 0.8, render: { visible: false } });
+    const leftWall = Bodies.rectangle(-wallThick / 2, 0, wallThick, height * 5, { isStatic: true, friction: 0.8, render: { visible: false } });
+    const rightWall = Bodies.rectangle(width + wallThick / 2, 0, wallThick, height * 5, { isStatic: true, friction: 0.8, render: { visible: false } });
+    const ceiling = Bodies.rectangle(width / 2, -100, width * 3, wallThick, { isStatic: true, friction: 0.1, render: { visible: false } });
+    Composite.add(engine.world, [ground, leftWall, rightWall, ceiling]);
 
     Events.on(render, 'afterRender', () => {
         const ctx = render.context;
@@ -1557,7 +1648,7 @@
             previewEl.style.backgroundImage = "none";
             previewEl.style.backgroundColor = "#2B2D42";
             previewEl.innerText = info.name;
-            previewEl.style.fontSize = Math.max(15, Math.round(info.radius * 0.38)) + 'px';
+            previewEl.style.fontSize = Math.max(15, Math.round(r * 0.38)) + 'px';
         }
 
         updatePreviewPos(currentX);
@@ -1575,7 +1666,6 @@
         canDrop = false;
 
         const info = ROLES[currentDropLevel];
-        // ★ 完美还原 4% 的下落高度 ★
         const dropY = height * 0.04; 
         const circle = Bodies.circle(currentX, dropY, info.radius, {
             restitution: 0.05, 
@@ -1649,18 +1739,37 @@
         });
     });
 
-    // ★ 完美还原 10% 的警戒线判定高度 ★
+    // ★ 核心防死机制：5秒体感保护期 + 3秒死局容错判定 ★
     const DANGER_Y = height * 0.10; 
+    let dangerCount = 0;
+
     setInterval(() => {
         if (isGameOver || isPaused) return;
+
+        if (Date.now() - lastShakeTime < 5000) {
+            dangerCount = 0;
+            return;
+        }
+
         const bodies = Composite.allBodies(engine.world);
+        let isCurrentlyDangerous = false;
+
         bodies.forEach(b => {
             if (b.roleInfo && (b.position.y - b.roleInfo.radius < DANGER_Y)) {
-                if (Math.abs(b.velocity.y) < 0.2 && Math.abs(b.velocity.x) < 0.2 && b.position.y > (height * 0.08)) {
-                    triggerGameOver();
+                if (b.speed < 0.2 && b.position.y > 60) {
+                    isCurrentlyDangerous = true;
                 }
             }
         });
+
+        if (isCurrentlyDangerous) {
+            dangerCount++;
+            if (dangerCount >= 3) {
+                triggerGameOver();
+            }
+        } else {
+            dangerCount = 0; 
+        }
     }, 1000);
 
     function triggerGameOver() {
