@@ -1180,7 +1180,7 @@
         const restoredBodies = data.bodies.map(d => {
             const rInfo = ROLES[d.level];
             const circle = Bodies.circle(d.x, d.y, rInfo.radius, {
-                angle: d.angle, restitution: 0.05, friction: 0.01, frictionAir: 0.002, density: 0.003, render: { visible: false }
+                angle: d.angle, restitution: 0.05, friction: 0.01, density: 0.003, render: { visible: false }
             });
             Matter.Body.setVelocity(circle, { x: d.vx, y: d.vy });
             circle.roleInfo = rInfo;
@@ -1550,7 +1550,7 @@
 
     const { Engine, Render, Runner, Bodies, Composite, Events } = Matter;
     const engine = Engine.create({ enableSleeping: false });
-    engine.gravity.y = 1.4; 
+    engine.gravity.y = 1.6; 
 
     const render = Render.create({
         element: wrapper,
@@ -1664,8 +1664,7 @@
         const dropY = height * 0.04; 
         const circle = Bodies.circle(currentX, dropY, info.radius, {
             restitution: 0.05, 
-            friction: 0.01,
-            frictionAir: 0.002,   
+            friction: 0.01,   
             density: 0.003,
             render: { visible: false }
         });
@@ -1705,7 +1704,6 @@
                         const newCircle = Bodies.circle(midX, midY, nextInfo.radius, {
                             restitution: 0.05,
                             friction: 0.01,
-                            frictionAir: 0.002,
                             density: 0.003,
                             render: { visible: false }
                         });
@@ -1752,7 +1750,7 @@
 
         bodies.forEach(b => {
             if (b.roleInfo && (b.position.y - b.roleInfo.radius < DANGER_Y)) {
-                if (Math.abs(b.velocity.y) < 0.2 && Math.abs(b.velocity.x) < 0.2 && b.position.y > (height * 0.08)) {
+                if (b.speed < 0.2 && b.position.y > 60) {
                     isCurrentlyDangerous = true;
                 }
             }
