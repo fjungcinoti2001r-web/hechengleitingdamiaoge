@@ -50,7 +50,7 @@
             }
         }
 
-        /* ★ 初始启动封面页排版 ★ */
+        /* 初始启动封面页 */
         #landing-page {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -115,7 +115,7 @@
             background: rgba(43, 45, 66, 0.3);
         }
 
-        /* 模式选择页（隐藏状态） */
+        /* 模式选择页 */
         #init-mask {
             display: none;
             position: fixed;
@@ -558,7 +558,7 @@
     <button class="btn-core btn-dark" style="width:100%;" onclick="closeLoadMenu()">返回</button>
 </div>
 
-<!-- ★ 初始启动封面页 ★ -->
+<!-- 初始启动封面页 -->
 <div id="landing-page">
     <div class="landing-title">合成大苗哥</div>
     <div class="init-subtitle">雷霆版</div>
@@ -575,10 +575,10 @@
     <button class="btn-core btn-gold" style="width: 220px; font-size: 20px; padding: 16px 0;" onclick="goToModeSelect()">点击进入</button>
 </div>
 
-<!-- ★ 模式选择页 ★ -->
+<!-- 模式选择页 -->
 <div id="init-mask">
-    <div class="landing-title">合成大苗哥</div>
-    <div class="init-subtitle">雷霆版</div>
+    <div class="landing-title" style="font-size: 32px; margin-bottom: 2px;">合成大苗哥</div>
+    <div class="init-subtitle" style="font-size: 18px; margin-bottom: 20px;">雷霆版</div>
     <div class="init-desc">请选择适合你的挑战模式：</div>
     <div class="btn-group" style="width: 250px; gap: 15px; margin-top: 0;">
         <button class="btn-core btn-gold" onclick="startGame('easy')">
@@ -588,7 +588,7 @@
             🟠 中级模式<br><span style="font-size:12px;font-weight:normal;color:#FFF;">含 炸弹+摇晃道具，关闭物理体感</span>
         </button>
         <button class="btn-core btn-red" onclick="startGame('hard')">
-            🔴 高级模式<br><span style="font-size:12px;font-weight:normal;">无任何道具，关闭物理体感</span>
+            🔴 高级模式<br><span style="font-size:12px;font-weight:normal;color:#FFF;">无任何道具，关闭物理体感</span>
         </button>
         <button class="btn-core btn-dark" style="margin-top: 10px;" id="init-load-btn" onclick="openLoadMenu()">
             📂 读取本地存档
@@ -869,13 +869,11 @@
     const initLoadBtn = document.getElementById('init-load-btn');
     const saveToast = document.getElementById('save-toast');
 
-    // ★ 步骤 1：点击进入切换页面 ★
     function goToModeSelect() {
         landingPage.style.display = 'none';
         initMask.style.display = 'flex';
     }
 
-    // ★ 步骤 2：启动游戏 ★
     function startGame(mode) {
         initMask.style.display = 'none';
         gameMode = mode;
@@ -1182,7 +1180,7 @@
         const restoredBodies = data.bodies.map(d => {
             const rInfo = ROLES[d.level];
             const circle = Bodies.circle(d.x, d.y, rInfo.radius, {
-                angle: d.angle, restitution: 0.15, friction: 0.15, density: 0.003, render: { visible: false }
+                angle: d.angle, restitution: 0.05, friction: 0.01, frictionAir: 0.002, density: 0.003, render: { visible: false }
             });
             Matter.Body.setVelocity(circle, { x: d.vx, y: d.vy });
             circle.roleInfo = rInfo;
@@ -1345,7 +1343,6 @@
         shakeCount--;
         updateShakeUI();
         
-        // ★ 给摇晃道具也加上 5秒 免死金牌 ★
         lastShakeTime = Date.now();
         dangerCount = 0;
 
@@ -1355,13 +1352,12 @@
             if (b.roleInfo && !b.isStatic) {
                 const dist = Matter.Vector.magnitude(Matter.Vector.sub(b.position, {x, y}));
                 if (dist < radius + b.roleInfo.radius) {
-                    // 调低抛飞系数，防止过度穿模
-                    const forceMagnitude = (0.02 + Math.random() * 0.02) * b.mass;
+                    const forceMagnitude = (0.015 + Math.random() * 0.015) * b.mass;
                     let angle = Math.atan2(b.position.y - y, b.position.x - x);
                     if (dist < 5) angle = Math.random() * Math.PI * 2; 
                     
                     const forceX = Math.cos(angle) * forceMagnitude;
-                    const forceY = -(0.03 * b.mass); // 固定受控升力
+                    const forceY = -(0.02 * b.mass); 
                     
                     Matter.Body.applyForce(b, b.position, { x: forceX, y: forceY });
                 }
@@ -1469,16 +1465,16 @@
             });
         }
         
-        if (deltaX > 12 || deltaY > 12 || deltaZ > 12) {
+        if (deltaX > 14 || deltaY > 14 || deltaZ > 14) {
             const now = Date.now();
             if (now - lastShakeTime > 800) {
                 lastShakeTime = now;
-                dangerCount = 0; // 重置死局计数
+                dangerCount = 0; 
                 const bodies = Composite.allBodies(engine.world);
                 bodies.forEach(b => {
                     if (b.roleInfo && !b.isStatic) {
-                        const forceX = (Math.random() - 0.5) * 0.03 * b.mass;
-                        const forceY = -(0.03 + Math.random() * 0.04) * b.mass;
+                        const forceX = (Math.random() - 0.5) * 0.015 * b.mass;
+                        const forceY = -(0.015 + Math.random() * 0.02) * b.mass;
                         Matter.Body.applyForce(b, b.position, { x: forceX, y: forceY });
                     }
                 });
@@ -1502,7 +1498,6 @@
 
     const scaleFactor = Math.min(1.2, Math.max(0.95, width / 380));
 
-    // ★ 全面瘦身版：从宰相小甘罗（Level 3）开始大幅缩小尺寸 ★
     const RAW_ROLES = [
         { level: 0,  name: "成瞎子", baseR: 22 },
         { level: 1,  name: "少林小子",   baseR: 28 },
@@ -1555,7 +1550,7 @@
 
     const { Engine, Render, Runner, Bodies, Composite, Events } = Matter;
     const engine = Engine.create({ enableSleeping: false });
-    engine.gravity.y = 1.6; 
+    engine.gravity.y = 1.4; 
 
     const render = Render.create({
         element: wrapper,
@@ -1572,12 +1567,12 @@
     const runner = Runner.create();
     Runner.run(runner, engine);
 
-    // ★ 物理修复：加厚墙壁与天花板罩子，绝对防穿模 ★
     const wallThick = 500; 
     const ground = Bodies.rectangle(width / 2, height + wallThick / 2, width * 3, wallThick, { isStatic: true, friction: 0.8, render: { visible: false } });
     const leftWall = Bodies.rectangle(-wallThick / 2, 0, wallThick, height * 5, { isStatic: true, friction: 0.8, render: { visible: false } });
     const rightWall = Bodies.rectangle(width + wallThick / 2, 0, wallThick, height * 5, { isStatic: true, friction: 0.8, render: { visible: false } });
-    const ceiling = Bodies.rectangle(width / 2, -100, width * 3, wallThick, { isStatic: true, friction: 0.1, render: { visible: false } });
+    const ceiling = Bodies.rectangle(width / 2, -200, width * 3, wallThick, { isStatic: true, friction: 0.1, render: { visible: false } });
+    
     Composite.add(engine.world, [ground, leftWall, rightWall, ceiling]);
 
     Events.on(render, 'afterRender', () => {
@@ -1669,7 +1664,8 @@
         const dropY = height * 0.04; 
         const circle = Bodies.circle(currentX, dropY, info.radius, {
             restitution: 0.05, 
-            friction: 0.01,   
+            friction: 0.01,
+            frictionAir: 0.002,   
             density: 0.003,
             render: { visible: false }
         });
@@ -1709,6 +1705,7 @@
                         const newCircle = Bodies.circle(midX, midY, nextInfo.radius, {
                             restitution: 0.05,
                             friction: 0.01,
+                            frictionAir: 0.002,
                             density: 0.003,
                             render: { visible: false }
                         });
@@ -1739,7 +1736,6 @@
         });
     });
 
-    // ★ 核心防死机制：5秒体感保护期 + 3秒死局容错判定 ★
     const DANGER_Y = height * 0.10; 
     let dangerCount = 0;
 
@@ -1756,7 +1752,7 @@
 
         bodies.forEach(b => {
             if (b.roleInfo && (b.position.y - b.roleInfo.radius < DANGER_Y)) {
-                if (b.speed < 0.2 && b.position.y > 60) {
+                if (Math.abs(b.velocity.y) < 0.2 && Math.abs(b.velocity.x) < 0.2 && b.position.y > (height * 0.08)) {
                     isCurrentlyDangerous = true;
                 }
             }
